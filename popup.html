@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 320px;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      margin: 0;
+      background: #fafafa;
+    }
+    
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 24px 0;
+      color: #2d3748;
+      text-align: center;
+    }
+    
+    .setting {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 12px 12px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .setting label {
+      flex-grow: 1;
+      color: #4a5568;
+      font-weight: 500;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    
+    .toggle {
+      position: relative;
+      width: 28px;
+      height: 16px;
+    }
+    
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #e2e8f0;
+      transition: 0.2s;
+      border-radius: 16px;
+    }
+    
+    .slider:before {
+      content: "";
+      position: absolute;
+      height: 12px;
+      width: 12px;
+      left: 2px;
+      top: 2px;
+      background-color: white;
+      transition: 0.2s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: #0073b1;
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(12px);
+    }
+    
+    .footer {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 12px;
+      color: #718096;
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    .brand-footer {
+      margin-top: 16px;
+      text-align: center;
+    }
+    
+    .brand-link {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 11px;
+      text-decoration: none;
+      color: white;
+      background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+      border: 1px solid #2d3748;
+      border-radius: 6px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+    
+    .brand-link:hover {
+      background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+      border-color: #1a202c;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transform: translateY(-1px);
+    }
+    
+    .brand-name {
+      color: #34d399;
+      font-style: italic;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <h1>LinkedIn Feed Cleaner</h1>
+  
+  <div class="setting">
+    <label for="blockAds">Block Promoted Posts</label>
+    <div class="toggle">
+      <input type="checkbox" id="blockAds">
+      <span class="slider"></span>
+    </div>
+  </div>
+  
+  <div class="setting">
+    <label for="blockSuggestedPosts">Hide Suggested Posts</label>
+    <div class="toggle">
+      <input type="checkbox" id="blockSuggestedPosts">
+      <span class="slider"></span>
+    </div>
+  </div>
+  
+  <div class="setting">
+    <label for="blockJobAds">Hide Job Recommendations</label>
+    <div class="toggle">
+      <input type="checkbox" id="blockJobAds">
+      <span class="slider"></span>
+    </div>
+  </div>
+  
+  <div class="setting">
+    <label for="hidePromotions">Hide All Promotions</label>
+    <div class="toggle">
+      <input type="checkbox" id="hidePromotions">
+      <span class="slider"></span>
+    </div>
+  </div>
+  
+  <div class="setting">
+    <label for="hideRightSidebar">Hide Right Sidebar</label>
+    <div class="toggle">
+      <input type="checkbox" id="hideRightSidebar">
+      <span class="slider"></span>
+    </div>
+  </div>
+  
+  <div class="footer">
+    Clean LinkedIn feed • No data collection
+  </div>
+  
+  <div class="brand-footer">
+    <a href="https://properbrand.co/" target="_blank" class="brand-link">
+      powered by <span class="brand-name">properbrand</span>
+    </a>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html> 

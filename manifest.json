@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "LinkedIn Feed Cleaner",
+  "version": "1.0.0",
+  "description": "Clean LinkedIn feed by removing ads, suggestions, and clutter",
+  
+  "content_scripts": [{
+    "matches": ["*://*.linkedin.com/*"],
+    "js": ["content.js"],
+    "css": ["styles.css"],
+    "run_at": "document_idle"
+  }],
+  
+  "permissions": ["storage", "activeTab"],
+  
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "LinkedIn Feed Cleaner"
+  },
+  
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+} 

@@ -1,0 +1,39 @@
+/* LinkedIn Feed Cleaner Styles */
+
+/* Smooth transitions for hidden elements */
+.feed-shared-update-v2[style*="display: none"] {
+  transition: opacity 0.3s ease-out;
+  opacity: 0;
+}
+
+/* Hide right sidebar smoothly */
+.scaffold-layout__aside[style*="display: none"] {
+  transition: opacity 0.3s ease-out, width 0.3s ease-out;
+  opacity: 0;
+  width: 0 !important;
+  overflow: hidden;
+}
+
+/* Prevent layout jumping when content is removed */
+.feed-shared-update-v2 {
+  transition: opacity 0.2s ease-out;
+}
+
+/* Style for blocked content indicator (optional) */
+.linkedin-cleaner-blocked {
+  opacity: 0.3;
+  pointer-events: none;
+  filter: grayscale(100%);
+}
+
+/* Ensure main content expands when sidebar is hidden */
+.scaffold-layout__main {
+  transition: width 0.3s ease-out;
+}
+
+/* Clean up sponsored content styling */
+[data-test-id*="sponsored"],
+[aria-label*="Promoted"],
+[aria-label*="Sponsored"] {
+  transition: opacity 0.2s ease-out;
+} 
