@@ -2,10 +2,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const checkboxes = {
     blockAds: document.getElementById('blockAds'),
     blockSuggestedPosts: document.getElementById('blockSuggestedPosts'),
-    blockJobAds: document.getElementById('blockJobAds'),
     hidePromotions: document.getElementById('hidePromotions'),
     hideRightSidebar: document.getElementById('hideRightSidebar')
   };
+
+  const hideAllBtn = document.getElementById('hideAllBtn');
 
   // Load settings from storage as fallback and primary source
   function loadSettingsFromStorage() {
@@ -16,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
           checkboxes[key].checked = settings[key] || false;
         }
       });
+      updateHideAllButton();
     });
   }
 
@@ -35,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
               checkboxes[key].checked = response.settings[key] || false;
             }
           });
+          updateHideAllButton();
         }
       });
     } else {
@@ -70,6 +73,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Always save to storage
         chrome.storage.local.set({ config: settings });
 
+        // Update Hide All button state
+        updateHideAllButton();
+
         // Also try to update content script if on LinkedIn
         chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
           if (tabs[0] && tabs[0].url && tabs[0].url.includes('linkedin.com')) {
@@ -86,5 +92,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       });
     }
+  });
+
+  // Update Hide All button appearance based on current settings
+  function updateHideAllButton() {
+    const allChecked = Object.values(checkboxes).every(checkbox => checkbox.checked);
+    if (allChecked) {
+      hideAllBtn.textContent = 'Show All';
+      hideAllBtn.classList.add('all-hidden');
+    } else {
+      hideAllBtn.textContent = 'Hide All';
+      hideAllBtn.classList.remove('all-hidden');
+    }
+  }
+
+  // Handle Hide All button click
+  hideAllBtn.addEventListener('click', function() {
+    const allChecked = Object.values(checkboxes).every(checkbox => checkbox.checked);
+    const newValue = !allChecked;
+    
+    Object.values(checkboxes).forEach(checkbox => {
+      checkbox.checked = newValue;
+      checkbox.dispatchEvent(new Event('change'));
+    });
+    
+    updateHideAllButton();
   });
 }); 
