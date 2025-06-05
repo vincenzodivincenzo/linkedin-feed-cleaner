@@ -6,7 +6,6 @@ A privacy-focused Chrome extension that cleans up LinkedIn's feed by removing ad
 
 - **Block Promoted Posts**: Removes sponsored/promoted content from your feed
 - **Hide Suggested Posts**: Filters out "Suggested for you" posts
-- **Hide Job Recommendations**: Removes "Jobs recommended for you" sections
 - **Hide Promotions**: Removes all promotional content
 - **Hide Right Sidebar**: Optional removal of LinkedIn's right sidebar clutter
 - **Clean Newsletter Prompts**: Removes subscription prompts and newsletter suggestions
