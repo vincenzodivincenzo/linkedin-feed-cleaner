@@ -5,7 +5,6 @@
   let config = {
     blockAds: true,
     blockSuggestedPosts: true,
-    blockJobAds: true,
     hideRightSidebar: false,
     hidePromotions: true
   };
@@ -61,32 +60,72 @@
       });
     }
 
-    // Remove suggested posts
+    // Remove suggested posts - Updated detection methods
     if (config.blockSuggestedPosts) {
+      // Method 1: Look for "Suggested" header
+      const suggestedHeaders = document.querySelectorAll('span[aria-hidden="true"]');
+      suggestedHeaders.forEach(header => {
+        if (header.textContent && header.textContent.trim() === 'Suggested') {
+          // Find the parent post container
+          let postContainer = header.closest('.feed-shared-update-v2') || 
+                             header.closest('[data-id*="urn:li:activity"]') ||
+                             header.closest('.update-v2-social-activity') ||
+                             header.closest('.feed-shared-update');
+          
+          if (postContainer) {
+            postContainer.style.display = 'none';
+          }
+        }
+      });
+
+      // Method 2: Traditional text-based detection (fallback)
       const posts = document.querySelectorAll('.feed-shared-update-v2, [data-id*="urn:li:activity"]');
       posts.forEach(post => {
         try {
           const text = post.textContent || '';
-          if (text.includes('Suggested for you') || text.includes('Suggested post')) {
+          if (text.includes('Suggested for you') || 
+              text.includes('Suggested post') ||
+              text.includes('Based on your profile') ||
+              text.includes('People in your network') ||
+              text.includes('Because you') ||
+              text.includes('Similar to posts you\'ve engaged with')) {
             post.style.display = 'none';
           }
         } catch (e) {
           console.warn('LinkedIn Feed Cleaner: Skipped malformed suggested post', e);
         }
       });
-    }
 
-    // Remove job recommendations
-    if (config.blockJobAds) {
-      const posts = document.querySelectorAll('.feed-shared-update-v2, [data-id*="urn:li:activity"]');
-      posts.forEach(post => {
+      // Method 3: Detection based on post structure without connection indicators
+      const allPosts = document.querySelectorAll('.feed-shared-update-v2, [data-id*="urn:li:activity"]');
+      allPosts.forEach(post => {
         try {
-          const text = post.textContent || '';
-          if (text.includes('Jobs recommended') || text.includes('Job recommendations')) {
-            post.style.display = 'none';
+          // Look for posts that don't have direct connection indicators
+          const hasConnectionInfo = post.querySelector('[data-test-id*="connection"]') ||
+                                  post.querySelector('.update-components-actor__meta') ||
+                                  post.textContent.includes('• 1st') ||
+                                  post.textContent.includes('• 2nd') ||
+                                  post.textContent.includes('• 3rd') ||
+                                  post.textContent.includes('follows');
+          
+          // Look for posts from outside your network with promotional characteristics
+          const hasPromotionalSignals = post.textContent.includes('recommended') ||
+                                       post.textContent.includes('trending') ||
+                                       post.querySelector('[data-test-id*="follow-button"]');
+          
+          // If it has promotional signals but no clear connection info, it's likely suggested
+          if (hasPromotionalSignals && !hasConnectionInfo) {
+            // Additional check: make sure it's not from a company page you follow
+            const isFromCompanyPage = post.querySelector('[data-test-id*="company"]') ||
+                                    post.textContent.includes('works at') ||
+                                    post.textContent.includes('Company');
+            
+            if (!isFromCompanyPage) {
+              post.style.display = 'none';
+            }
           }
         } catch (e) {
-          console.warn('LinkedIn Feed Cleaner: Skipped malformed job post', e);
+          console.warn('LinkedIn Feed Cleaner: Skipped malformed network post', e);
         }
       });
     }
@@ -144,6 +183,27 @@
           if (el) el.style.display = 'none';
         });
       }
+
+      // Remove collaborative articles and trending posts
+      if (config.blockSuggestedPosts) {
+        const collaborativeArticles = document.querySelectorAll('[data-test-id*="collaborative-article"]');
+        collaborativeArticles.forEach(el => {
+          if (el) el.style.display = 'none';
+        });
+
+        // Remove trending hashtag sections
+        const trendingElements = document.querySelectorAll('*');
+        trendingElements.forEach(el => {
+          if (el.textContent && el.textContent.includes('Trending now')) {
+            const container = el.closest('.feed-shared-update-v2') || 
+                            el.closest('[data-id*="urn:li:activity"]') ||
+                            el.closest('.scaffold-finite-scroll__content > div');
+            if (container) {
+              container.style.display = 'none';
+            }
+          }
+        });
+      }
     } catch (e) {
       console.warn('LinkedIn Feed Cleaner: Error in additional cleanup', e);
     }
@@ -187,4 +247,4 @@
     }
   });
 
-})(); 
+})();
