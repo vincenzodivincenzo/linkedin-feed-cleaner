@@ -124,10 +124,46 @@
       font-style: italic;
       font-weight: 600;
     }
+    
+    .hide-all-container {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .hide-all-btn {
+      background: linear-gradient(135deg, #0073b1 0%, #005885 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .hide-all-btn:hover {
+      background: linear-gradient(135deg, #005885 0%, #004266 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    .hide-all-btn.all-hidden {
+      background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    }
+    
+    .hide-all-btn.all-hidden:hover {
+      background: linear-gradient(135deg, #c53030 0%, #9c2626 100%);
+    }
   </style>
 </head>
 <body>
   <h1>LinkedIn Feed Cleaner</h1>
+  
+  <div class="hide-all-container">
+    <button id="hideAllBtn" class="hide-all-btn">Hide All</button>
+  </div>
   
   <div class="setting">
     <label for="blockAds">Block Promoted Posts</label>
@@ -141,14 +177,6 @@
     <label for="blockSuggestedPosts">Hide Suggested Posts</label>
     <div class="toggle">
       <input type="checkbox" id="blockSuggestedPosts">
-      <span class="slider"></span>
-    </div>
-  </div>
-  
-  <div class="setting">
-    <label for="blockJobAds">Hide Job Recommendations</label>
-    <div class="toggle">
-      <input type="checkbox" id="blockJobAds">
       <span class="slider"></span>
     </div>
   </div>
@@ -181,4 +209,4 @@
   
   <script src="popup.js"></script>
 </body>
-</html> 
+</html>
