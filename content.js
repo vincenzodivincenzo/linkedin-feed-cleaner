@@ -60,69 +60,100 @@
       });
     }
 
-    // Remove suggested posts - Updated detection methods
+    // Remove suggested posts - Comprehensive detection methods
     if (config.blockSuggestedPosts) {
-      // Method 1: Look for "Suggested" header
-      const suggestedHeaders = document.querySelectorAll('span[aria-hidden="true"]');
-      suggestedHeaders.forEach(header => {
-        if (header.textContent && header.textContent.trim() === 'Suggested') {
+      // Method 1: Direct "Suggested" text detection (most reliable)
+      const allElements = document.querySelectorAll('*');
+      allElements.forEach(element => {
+        if (element.textContent && element.textContent.trim() === 'Suggested') {
           // Find the parent post container
-          let postContainer = header.closest('.feed-shared-update-v2') || 
-                             header.closest('[data-id*="urn:li:activity"]') ||
-                             header.closest('.update-v2-social-activity') ||
-                             header.closest('.feed-shared-update');
+          let postContainer = element.closest('.feed-shared-update-v2') || 
+                             element.closest('[data-id*="urn:li:activity"]') ||
+                             element.closest('.update-v2-social-activity') ||
+                             element.closest('.feed-shared-update') ||
+                             element.closest('div[data-id]') ||
+                             element.closest('article') ||
+                             element.closest('[role="article"]');
           
           if (postContainer) {
-            postContainer.style.display = 'none';
+            postContainer.style.display = 'none !important';
+            postContainer.remove(); // More aggressive removal
           }
         }
       });
 
-      // Method 2: Traditional text-based detection (fallback)
-      const posts = document.querySelectorAll('.feed-shared-update-v2, [data-id*="urn:li:activity"]');
+      // Method 2: Look for Follow buttons in posts (strong indicator of suggested content)
+      const followButtons = document.querySelectorAll('button[aria-label*="Follow"], button[data-control-name*="follow"]');
+      followButtons.forEach(button => {
+        const postContainer = button.closest('.feed-shared-update-v2') || 
+                             button.closest('[data-id*="urn:li:activity"]') ||
+                             button.closest('.update-v2-social-activity') ||
+                             button.closest('.feed-shared-update') ||
+                             button.closest('div[data-id]') ||
+                             button.closest('article');
+        
+        if (postContainer) {
+          // Check if this is actually a suggested post, not just a company page you don't follow
+          const hasConnectionIndicator = postContainer.textContent.includes('• 1st') ||
+                                        postContainer.textContent.includes('• 2nd') ||
+                                        postContainer.textContent.includes('• 3rd') ||
+                                        postContainer.textContent.includes('follows you') ||
+                                        postContainer.textContent.includes('connections');
+          
+          if (!hasConnectionIndicator) {
+            postContainer.style.display = 'none !important';
+            postContainer.remove();
+          }
+        }
+      });
+
+      // Method 3: Text-based detection for various suggestion phrases
+      const posts = document.querySelectorAll('.feed-shared-update-v2, [data-id*="urn:li:activity"], div[data-id], article');
       posts.forEach(post => {
         try {
           const text = post.textContent || '';
-          if (text.includes('Suggested for you') || 
-              text.includes('Suggested post') ||
-              text.includes('Based on your profile') ||
-              text.includes('People in your network') ||
-              text.includes('Because you') ||
-              text.includes('Similar to posts you\'ve engaged with')) {
-            post.style.display = 'none';
+          const lowerText = text.toLowerCase();
+          
+          if (lowerText.includes('suggested for you') || 
+              lowerText.includes('suggested post') ||
+              lowerText.includes('based on your profile') ||
+              lowerText.includes('people in your network') ||
+              lowerText.includes('because you') ||
+              lowerText.includes('similar to posts you\'ve engaged with') ||
+              lowerText.includes('recommended for you') ||
+              text.includes('Suggested')) {
+            post.style.display = 'none !important';
+            post.remove();
           }
         } catch (e) {
           console.warn('LinkedIn Feed Cleaner: Skipped malformed suggested post', e);
         }
       });
 
-      // Method 3: Detection based on post structure without connection indicators
-      const allPosts = document.querySelectorAll('.feed-shared-update-v2, [data-id*="urn:li:activity"]');
+      // Method 4: Remove posts without clear network connections
+      const allPosts = document.querySelectorAll('.feed-shared-update-v2, [data-id*="urn:li:activity"], div[data-id]');
       allPosts.forEach(post => {
         try {
-          // Look for posts that don't have direct connection indicators
-          const hasConnectionInfo = post.querySelector('[data-test-id*="connection"]') ||
-                                  post.querySelector('.update-components-actor__meta') ||
-                                  post.textContent.includes('• 1st') ||
-                                  post.textContent.includes('• 2nd') ||
-                                  post.textContent.includes('• 3rd') ||
-                                  post.textContent.includes('follows');
+          const text = post.textContent || '';
           
-          // Look for posts from outside your network with promotional characteristics
-          const hasPromotionalSignals = post.textContent.includes('recommended') ||
-                                       post.textContent.includes('trending') ||
-                                       post.querySelector('[data-test-id*="follow-button"]');
+          // Check for connection indicators
+          const hasConnectionInfo = text.includes('• 1st') ||
+                                  text.includes('• 2nd') ||
+                                  text.includes('• 3rd') ||
+                                  text.includes('follows you') ||
+                                  text.includes('connections') ||
+                                  text.includes('mutual connections') ||
+                                  post.querySelector('[data-test-id*="connection"]');
           
-          // If it has promotional signals but no clear connection info, it's likely suggested
-          if (hasPromotionalSignals && !hasConnectionInfo) {
-            // Additional check: make sure it's not from a company page you follow
-            const isFromCompanyPage = post.querySelector('[data-test-id*="company"]') ||
-                                    post.textContent.includes('works at') ||
-                                    post.textContent.includes('Company');
-            
-            if (!isFromCompanyPage) {
-              post.style.display = 'none';
-            }
+          // Check for follow button (indicator of non-connection)
+          const hasFollowButton = post.querySelector('button[aria-label*="Follow"]') ||
+                                 post.querySelector('button[data-control-name*="follow"]') ||
+                                 text.includes('Follow');
+          
+          // If it has a follow button but no connection info, it's likely suggested
+          if (hasFollowButton && !hasConnectionInfo) {
+            post.style.display = 'none !important';
+            post.remove();
           }
         } catch (e) {
           console.warn('LinkedIn Feed Cleaner: Skipped malformed network post', e);
@@ -221,8 +252,8 @@
     };
   }
 
-  // Create debounced version of cleanFeed with 500ms throttle delay
-  const debouncedCleanFeed = debounce(cleanFeed, 500);
+  // Create debounced version of cleanFeed with 200ms throttle delay for faster response
+  const debouncedCleanFeed = debounce(cleanFeed, 200);
 
   // Watch for dynamic content changes
   const observer = new MutationObserver(function(mutations) {
