@@ -47,7 +47,7 @@
 }
 
 .hide-all-btn {
-  background: linear-gradient(135deg, #02d582 0%, #02b36b 100%);
+  background: linear-gradient(135deg, #00fcdf 0%, #00d4b8 100%);
   color: white;
   border: none;
   padding: 12px 24px;
@@ -60,7 +60,7 @@
 }
 
 .hide-all-btn:hover {
-  background: linear-gradient(135deg, #02b36b 0%, #029a5a 100%);
+  background: linear-gradient(135deg, #00d4b8 0%, #00b8a0 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
