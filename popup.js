@@ -3,20 +3,32 @@ document.addEventListener('DOMContentLoaded', function() {
     blockAds: document.getElementById('blockAds'),
     blockSuggestedPosts: document.getElementById('blockSuggestedPosts'),
     hidePromotions: document.getElementById('hidePromotions'),
-    hideRightSidebar: document.getElementById('hideRightSidebar')
+    hideRightSidebar: document.getElementById('hideRightSidebar'),
+    blockReactedPosts: document.getElementById('blockReactedPosts'),
+    debugMode: document.getElementById('debugMode')
   };
 
   const hideAllBtn = document.getElementById('hideAllBtn');
+  const resetViewBtn = document.getElementById('btn-reset-view');
+
+  const keywordBlockListElement = document.getElementById('keywordBlockList');
+
 
   // Load settings from storage as fallback and primary source
   function loadSettingsFromStorage() {
-    chrome.storage.local.get(['config'], function(result) {
+    chrome.storage.local.get(['config', 'keywordBlockList'], function(result) {
       const settings = result.config || {};
       Object.keys(checkboxes).forEach(key => {
         if (checkboxes[key]) {
           checkboxes[key].checked = settings[key] || false;
         }
       });
+      
+      // Update keyword block list
+      if (keywordBlockListElement && result.keywordBlockList) {
+        keywordBlockListElement.value = result.keywordBlockList.join(', ');
+      }
+      
       updateHideAllButton();
     });
   }
@@ -37,6 +49,14 @@ document.addEventListener('DOMContentLoaded', function() {
               checkboxes[key].checked = response.settings[key] || false;
             }
           });
+          
+          // Also get the keywords from storage
+          chrome.storage.local.get(['keywordBlockList'], function(result) {
+            if (keywordBlockListElement && result.keywordBlockList) {
+              keywordBlockListElement.value = result.keywordBlockList.join(', ');
+            }
+          });
+          
           updateHideAllButton();
         }
       });
@@ -70,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         });
 
-        // Always save to storage
+                // Always save to storage
         chrome.storage.local.set({ config: settings });
 
         // Update Hide All button state
@@ -99,10 +119,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const allChecked = Object.values(checkboxes).every(checkbox => checkbox.checked);
     if (allChecked) {
       hideAllBtn.textContent = 'Show All';
-      hideAllBtn.classList.add('all-hidden');
+      hideAllBtn.classList.remove('clean-btn');
+      hideAllBtn.classList.add('restore-btn');
     } else {
       hideAllBtn.textContent = 'Hide All';
-      hideAllBtn.classList.remove('all-hidden');
+      hideAllBtn.classList.remove('restore-btn');
+      hideAllBtn.classList.add('clean-btn');
     }
   }
 
@@ -118,4 +140,49 @@ document.addEventListener('DOMContentLoaded', function() {
     
     updateHideAllButton();
   });
+
+  // Handle keyword block list changes
+  if (keywordBlockListElement) {
+    keywordBlockListElement.addEventListener('input', function() {
+      const keywords = this.value.split(',').map(k => k.trim()).filter(k => k.length > 0);
+      
+      // Save keywords to storage
+      chrome.storage.local.set({ keywordBlockList: keywords });
+      
+      // Update content script if on LinkedIn
+      chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        if (tabs[0] && tabs[0].url && tabs[0].url.includes('linkedin.com')) {
+          chrome.tabs.sendMessage(tabs[0].id, {
+            action: 'updateKeywords',
+            keywords: keywords
+          });
+        }
+      });
+    });
+  }
+
+
+
+
+
+  // Handle Reset View button click
+  resetViewBtn.addEventListener('click', function() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+      if (tabs[0] && tabs[0].url && tabs[0].url.includes('linkedin.com')) {
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'resetView' }, function(response) {
+          if (chrome.runtime.lastError) {
+            console.log('Content script not available');
+          } else {
+            console.log('View reset successfully');
+          }
+        });
+      }
+    });
+  });
+
+
+
+
+
+
 }); 

@@ -1,74 +1,98 @@
-# LinkedIn Feed Cleaner
+# LinkedIn Feed Cleaner v2.0.0
 
-A privacy-focused Chrome extension that cleans up LinkedIn's feed by removing ads, suggested posts, and clutter without collecting any user data. Built by [ProperBrand](https://properbrand.co) and Cursor.
+Clean and focused LinkedIn feed cleaner that removes unwanted content without bloat.
 
 ## Features
 
-- **Block Promoted Posts**: Removes sponsored/promoted content from your feed
-- **Hide Suggested Posts**: Filters out "Suggested for you" posts
-- **Hide Promotions**: Removes all promotional content
-- **Hide Right Sidebar**: Optional removal of LinkedIn's right sidebar clutter
-- **Clean Newsletter Prompts**: Removes subscription prompts and newsletter suggestions
+### Core Feed Cleaning
+- **Block Promoted Posts**: Remove sponsored and promoted content
+- **Hide Suggested Posts**: Filter out algorithm-suggested posts
+- **Hide All Promotions**: Comprehensive promotion removal
+- **Hide Right Sidebar**: Clean up sidebar clutter
+- **Block "Reacted to" Posts**: Remove posts only shown because someone in your network liked/commented/reacted
 
-## Privacy & Security
+### Advanced Filtering
+- **Keyword Blocker**: Hide posts containing specific keywords (e.g., "NFT", "crypto", "webinar")
 
-This extension is designed with privacy as the primary concern:
-
-- **No Data Collection**: Zero user data is collected, stored externally, or transmitted
-- **Minimal Permissions**: Only requires `storage` permission for saving your preferences
-- **LinkedIn-Only**: Only operates on LinkedIn domains
-- **No Background Scripts**: No persistent background processes
-- **No External API Calls**: All filtering happens locally in your browser
-- **Open Source**: Full transparency in functionality
+### User Experience
+- **Clean Now Button**: Manually trigger feed cleaning without page refresh
+- **Reset View Button**: Reload settings and reapply filters
+- **Debug Mode**: See what's being blocked with red borders and console logs
+- **Restore Blocked Posts**: Temporarily show all hidden content (30-second timeout)
 
 ## Installation
 
-1. Download or clone this repository
-2. Open Chrome and go to `chrome://extensions/`
-3. Enable "Developer mode" in the top right
+1. Download the extension files
+2. Open Chrome and navigate to `chrome://extensions/`
+3. Enable "Developer mode"
 4. Click "Load unpacked" and select the extension folder
-5. The extension icon will appear in your toolbar
+5. The extension will appear in your toolbar
 
 ## Usage
 
-1. Click the extension icon while on LinkedIn
-2. Toggle the features you want to enable/disable
-3. Settings are automatically saved and applied immediately
-4. Refresh LinkedIn to see changes
+### Basic Settings
+- Click the extension icon to open the popup
+- Toggle individual cleaning options on/off
+- Use "Hide All" to enable all filters at once
 
-## Security Comparison
+### Keyword Blocking
+- Enter comma-separated keywords in the "Block Keywords" field
+- Posts containing these keywords will be automatically hidden
+- Example: `NFT, crypto, webinar, MLM`
 
-Unlike many "free" LinkedIn extensions that:
-- Extract cookies and session tokens
-- Harvest your connection lists
-- Make unauthorized API calls
-- Require excessive permissions
+### Debug Mode
+- Enable "Debug Mode" to see blocked posts with red borders instead of hiding them
+- Check browser console for detailed blocking reasons
+- All blocked content types use the same visual indicator for simplicity
 
-This extension:
-- Uses only DOM manipulation for content filtering
-- Stores settings locally on your device only
-- Requires minimal permissions
-- Contains no tracking or analytics
-- Has no external dependencies
+### Restore Functionality
+- Use "Restore Blocked Posts" to temporarily show all hidden content
+- Auto-restores blocking after 30 seconds to prevent confusion
+- Useful for checking what was blocked and identifying false positives
 
-## Development
+### Page-Specific Behavior
+- **Main Feed**: Extension runs normally, cleaning the feed
+- **Individual Posts**: Extension is disabled to prevent interference with post viewing
+- **Other LinkedIn Pages**: Extension only runs on feed pages
 
-The extension consists of:
-- `manifest.json`: Extension configuration with minimal permissions
-- `content.js`: Content script for DOM manipulation
-- `popup.html/js`: Settings interface
-- `styles.css`: Smooth transition styling
+## Technical Details
 
-## Contributing
+- **DOM-only filtering**: No API calls or data collection
+- **Real-time updates**: Automatic detection of new content
+- **Performance optimized**: Debounced cleaning with 200ms throttle
+- **Conservative filtering**: Reduced false positives with legitimacy checks
+- **Page-aware**: Only runs on main feed, not individual post pages
+- **Chrome Web Store compliant**: Follows all extension guidelines
 
-Feel free to submit issues or pull requests to improve the extension's functionality while maintaining its privacy-first approach.
+## Privacy & Security
+
+- Zero data collection or transmission
+- All processing happens locally in your browser
+- No external API calls or tracking
+- Settings stored locally in Chrome storage
+
+## Version History
+
+### v2.0.0 (Current)
+- Added "Block Reacted to Posts" feature with comprehensive reaction pattern detection
+- Implemented keyword blocking system
+- Added "Clean Now" and "Reset View" buttons
+- Added debug mode for transparency
+- Added restore functionality with 30-second timeout
+- Improved filtering logic to reduce false positives
+- Added page-specific behavior (disabled on individual post pages)
+- Simplified UI focused on core cleaning functionality
+- Removed counter system for cleaner, more focused experience
+
+### v1.2.0
+- Core feed cleaning functionality
+- Basic promotion and suggestion blocking
+- Sidebar hiding option
+
+## Support
+
+For issues or feature requests, please create an issue in the repository.
 
 ## License
 
-MIT License - Use freely, modify as needed, but please maintain the privacy-focused approach.
-
-## Nerd Note: How it avoids detection
-
-We use a MutationObserver to catch dynamic content changes (LinkedIn loves infinite scroll garbage).  
-But we debounce the cleanup to run **at most once every 500ms**, so it doesn't look like a bot hammering the DOM.  
-All filtering is cosmetic—no layout rewriting, no injected behavior, no stored sessions.
+MIT License - see LICENSE file for details.

@@ -9,14 +9,14 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       font-size: 14px;
       margin: 0;
-      background: #fafafa;
+      background: #ebe9e3;
     }
     
     h1 {
       font-size: 20px;
       font-weight: 700;
       margin: 0 0 24px 0;
-      color: #2d3748;
+      color: #242424;
       text-align: center;
     }
     
@@ -33,7 +33,7 @@
     
     .setting label {
       flex-grow: 1;
-      color: #4a5568;
+      color: #242424;
       font-weight: 500;
       cursor: pointer;
       margin-right: 10px;
@@ -76,7 +76,7 @@
     }
     
     input:checked + .slider {
-      background-color: #0073b1;
+      background-color: #02d582;
     }
     
     input:checked + .slider:before {
@@ -86,9 +86,9 @@
     .footer {
       margin-top: 24px;
       padding-top: 20px;
-      border-top: 1px solid #e2e8f0;
+      border-top: 1px solid #242424;
       font-size: 12px;
-      color: #718096;
+      color: #242424;
       text-align: center;
       font-weight: 500;
     }
@@ -125,45 +125,118 @@
       font-weight: 600;
     }
     
-    .hide-all-container {
+    .dual-button-container {
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
       margin-bottom: 20px;
-      text-align: center;
     }
     
-    .hide-all-btn {
-      background: linear-gradient(135deg, #0073b1 0%, #005885 100%);
-      color: white;
+    .dual-button-container .action-btn {
+      flex: 1;
+    }
+    
+
+    
+    .action-btn {
+      flex: 1;
+      padding: 8px 12px;
       border: none;
-      padding: 10px 20px;
       border-radius: 6px;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     
-    .hide-all-btn:hover {
-      background: linear-gradient(135deg, #005885 0%, #004266 100%);
+    .clean-btn {
+      background: linear-gradient(135deg, #02d582 0%, #02b36b 100%);
+      color: white;
+    }
+    
+    .clean-btn:hover {
+      background: linear-gradient(135deg, #02b36b 0%, #029a5a 100%);
       transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
     
-    .hide-all-btn.all-hidden {
+    .reset-btn {
+      background: linear-gradient(135deg, #242424 0%, #1a1a1a 100%);
+      color: white;
+      border: 1px solid #242424;
+    }
+    
+    .reset-btn:hover {
+      background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    
+
+    
+    .restore-btn {
       background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+      color: white;
     }
     
-    .hide-all-btn.all-hidden:hover {
+    .restore-btn:hover {
       background: linear-gradient(135deg, #c53030 0%, #9c2626 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
+    
+
+    
+    .keyword-section {
+      margin-bottom: 20px;
+      padding: 12px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .keyword-label {
+      display: block;
+      color: #242424;
+      font-weight: 500;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+    
+    #keywordBlockList {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 13px;
+      font-family: inherit;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+    
+    #keywordBlockList:focus {
+      outline: none;
+      border-color: #02d582;
+      box-shadow: 0 0 0 3px rgba(2, 213, 130, 0.1);
+    }
+    
+
   </style>
 </head>
 <body>
   <h1>LinkedIn Feed Cleaner</h1>
   
-  <div class="hide-all-container">
-    <button id="hideAllBtn" class="hide-all-btn">Hide All</button>
+  <div class="dual-button-container">
+    <button id="hideAllBtn" class="action-btn clean-btn">Hide All</button>
+    <button id="btn-reset-view" class="action-btn reset-btn">Reset View</button>
   </div>
+  
+
+  
+
+  
+
   
   <div class="setting">
     <label for="blockAds">Block Promoted Posts</label>
@@ -196,6 +269,29 @@
       <span class="slider"></span>
     </div>
   </div>
+  
+  <div class="setting">
+    <label for="blockReactedPosts">Block "Reacted to" Posts</label>
+    <div class="toggle">
+      <input type="checkbox" id="blockReactedPosts">
+      <span class="slider"></span>
+    </div>
+  </div>
+  
+  <div class="setting">
+    <label for="debugMode">Debug Mode (Show Blocked Items)</label>
+    <div class="toggle">
+      <input type="checkbox" id="debugMode">
+      <span class="slider"></span>
+    </div>
+  </div>
+  
+  <div class="keyword-section">
+    <label for="keywordBlockList" class="keyword-label">Block Keywords (comma-separated)</label>
+    <textarea id="keywordBlockList" placeholder="e.g., NFT, crypto, webinar" rows="3"></textarea>
+  </div>
+  
+
   
   <div class="footer">
     Clean LinkedIn feed • No data collection

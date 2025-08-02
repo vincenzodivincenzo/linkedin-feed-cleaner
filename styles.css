@@ -36,4 +36,40 @@
 [aria-label*="Promoted"],
 [aria-label*="Sponsored"] {
   transition: opacity 0.2s ease-out;
-} 
+}
+
+/* Hide All button styles */
+.hide-all-container {
+  margin-bottom: 20px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.hide-all-btn {
+  background: linear-gradient(135deg, #02d582 0%, #02b36b 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.hide-all-btn:hover {
+  background: linear-gradient(135deg, #02b36b 0%, #029a5a 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.hide-all-btn.all-hidden {
+  background: linear-gradient(135deg, #242424 0%, #1a1a1a 100%);
+}
+
+.hide-all-btn.all-hidden:hover {
+  background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+}
+
