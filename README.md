@@ -1,4 +1,4 @@
-# LinkedIn Feed Cleaner v2.0.0
+# LinkedIn Feed Cleaner v1.0.0
 
 Clean and focused LinkedIn feed cleaner that removes unwanted content without bloat.
 
