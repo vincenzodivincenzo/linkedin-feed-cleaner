@@ -10,11 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const hideAllBtn = document.getElementById('hideAllBtn');
   const resetViewBtn = document.getElementById('btn-reset-view');
-
   const keywordBlockListElement = document.getElementById('keywordBlockList');
 
-
-  // Load settings from storage as fallback and primary source
   function loadSettingsFromStorage() {
     chrome.storage.local.get(['config', 'keywordBlockList'], function(result) {
       const settings = result.config || {};
@@ -24,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
       
-      // Update keyword block list
       if (keywordBlockListElement && result.keywordBlockList) {
         keywordBlockListElement.value = result.keywordBlockList.join(', ');
       }
@@ -33,12 +29,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Load current settings
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
     if (tabs[0] && tabs[0].url && tabs[0].url.includes('linkedin.com')) {
       chrome.tabs.sendMessage(tabs[0].id, { action: 'getSettings' }, function(response) {
         if (chrome.runtime.lastError) {
-          // Content script not available, load from storage
           loadSettingsFromStorage();
           return;
         }
@@ -50,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
           });
           
-          // Also get the keywords from storage
           chrome.storage.local.get(['keywordBlockList'], function(result) {
             if (keywordBlockListElement && result.keywordBlockList) {
               keywordBlockListElement.value = result.keywordBlockList.join(', ');
@@ -61,12 +54,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
     } else {
-      // Not on LinkedIn, just load from storage
       loadSettingsFromStorage();
     }
   });
 
-  // Add click handlers to toggle sliders
   Object.keys(checkboxes).forEach(key => {
     if (checkboxes[key]) {
       const slider = checkboxes[key].nextElementSibling;
@@ -79,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Save settings when changed
   Object.keys(checkboxes).forEach(key => {
     if (checkboxes[key]) {
       checkboxes[key].addEventListener('change', function() {
@@ -90,20 +80,15 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         });
 
-                // Always save to storage
         chrome.storage.local.set({ config: settings });
-
-        // Update Hide All button state
         updateHideAllButton();
 
-        // Also try to update content script if on LinkedIn
         chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
           if (tabs[0] && tabs[0].url && tabs[0].url.includes('linkedin.com')) {
             chrome.tabs.sendMessage(tabs[0].id, {
               action: 'updateSettings',
               settings: settings
             }, function(response) {
-              // Ignore errors here since storage is the primary persistence
               if (chrome.runtime.lastError) {
                 console.log('Content script not available, settings saved to storage');
               }
@@ -114,7 +99,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Update Hide All button appearance based on current settings
   function updateHideAllButton() {
     const allChecked = Object.values(checkboxes).every(checkbox => checkbox.checked);
     if (allChecked) {
@@ -128,7 +112,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Handle Hide All button click
   hideAllBtn.addEventListener('click', function() {
     const allChecked = Object.values(checkboxes).every(checkbox => checkbox.checked);
     const newValue = !allChecked;
@@ -141,15 +124,12 @@ document.addEventListener('DOMContentLoaded', function() {
     updateHideAllButton();
   });
 
-  // Handle keyword block list changes
   if (keywordBlockListElement) {
     keywordBlockListElement.addEventListener('input', function() {
       const keywords = this.value.split(',').map(k => k.trim()).filter(k => k.length > 0);
       
-      // Save keywords to storage
       chrome.storage.local.set({ keywordBlockList: keywords });
       
-      // Update content script if on LinkedIn
       chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
         if (tabs[0] && tabs[0].url && tabs[0].url.includes('linkedin.com')) {
           chrome.tabs.sendMessage(tabs[0].id, {
@@ -161,11 +141,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-
-
-
-
-  // Handle Reset View button click
   resetViewBtn.addEventListener('click', function() {
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       if (tabs[0] && tabs[0].url && tabs[0].url.includes('linkedin.com')) {
@@ -179,10 +154,4 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
-
-
-
-
-
-
 }); 

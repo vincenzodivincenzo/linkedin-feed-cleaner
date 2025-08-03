@@ -1,7 +1,6 @@
 (function() {
   'use strict';
 
-  // Configuration
   let config = {
     blockAds: true,
     blockSuggestedPosts: true,
@@ -11,12 +10,8 @@
     debugMode: false
   };
 
-
-  
-  // Keyword block list
   let keywordBlockList = [];
 
-  // Load settings from storage
   function loadSettings() {
     chrome.storage.local.get(['config', 'keywordBlockList'], function(result) {
       if (result.config) {
@@ -29,7 +24,6 @@
     });
   }
 
-  // Save settings to storage
   function saveSettings() {
     chrome.storage.local.set({ 
       config: config, 
@@ -37,12 +31,6 @@
     });
   }
 
-  // Check if a post is legitimate (should not be blocked)
-
-
-
-
-  // Clear debug styling
   function clearDebugStyling() {
     const debugElements = document.querySelectorAll('[style*="border: 2px solid #e53e3e"]');
     debugElements.forEach(element => {
@@ -51,15 +39,10 @@
     });
   }
 
-  // Restore blocked posts (session-only)
-
-
   function cleanFeed() {
     if (!window.location.href.includes('linkedin.com')) return;
     if (window.location.pathname.includes('/posts/') || window.location.pathname.includes('/activity/')) return;
     if (!config.debugMode) clearDebugStyling();
-
-
 
     if (config.blockAds || config.hidePromotions) {
       const postSelectors = [
@@ -92,7 +75,6 @@
               } else {
                 post.style.display = 'none';
               }
-
             }
           } catch (e) {
             console.warn('LinkedIn Feed Cleaner: Skipped malformed post', e);
@@ -167,11 +149,7 @@
     if (config.blockReactedPosts) blockReactedPosts();
     if (keywordBlockList.length > 0) blockKeywordPosts();
     cleanAdditionalClutter();
-
-
   }
-
-
 
   function blockKeywordPosts() {
     try {
@@ -224,7 +202,6 @@
         const posts = document.querySelectorAll(selector);
         posts.forEach(post => {
           try {
-            
             const reactionPatterns = [
               'likes this', 'loved this', 'loves this', 'celebrates this', 'celebrated this',
               'finds this insightful', 'found this insightful', 'supports this', 'supported this',
@@ -232,7 +209,6 @@
             ];
             
             const hasReactionText = reactionPatterns.some(pattern => {
-              // Check in the specific LinkedIn header text view where reaction indicators appear
               const reactionArea = post.querySelector('.update-components-header__text-view')?.textContent || '';
               return reactionArea.toLowerCase().includes(pattern);
             });
@@ -318,9 +294,7 @@
     if (request.action === 'getSettings') {
       sendResponse({ settings: config });
     }
-
     if (request.action === 'resetView') {
-      // Reload settings and reapply
       loadSettings();
       sendResponse({ success: true });
     }
@@ -330,8 +304,6 @@
       cleanFeed();
       sendResponse({ success: true });
     }
-
-
   });
 
 })();
